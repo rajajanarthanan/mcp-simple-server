@@ -5,6 +5,8 @@ import os
 import uvicorn
 from mcp.server.fastmcp import FastMCP
 
+from supabase_edge_client import call_sup_fun
+
 mcp = FastMCP("Simple Server")
 
 
@@ -19,6 +21,10 @@ def multiply(a: float, b: float) -> float:
     """Multiply two numbers"""
     return a * b
 
+@mcp.tool()
+def test_sup_client():
+    call_sup_fun("helloworld", {"message": "Hello from MCP!"})
+
 
 def main():
     """Run the server"""
@@ -29,6 +35,8 @@ def main():
     print(f"HOST: {host}")
     print(f"PORT: {port}")
     print("MCP endpoint will be available at the server URL + /mcp")
+
+    test_sup_client()
 
     # For production (Railway), use direct uvicorn control
     if host == "0.0.0.0" or os.getenv("RAILWAY_ENVIRONMENT"):
