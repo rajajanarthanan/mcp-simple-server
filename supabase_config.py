@@ -30,17 +30,17 @@ def _load_dotenv_file(path: Path) -> dict:
 
 
 def load_supabase_config():
-    """Load SUPABASE_URL and SUPABASE_ANON_KEY from env, .env, or sensible defaults.
+    """Load SUPABASE_URL and SUPABASE_SECRET_KEY from env, .env, or sensible defaults.
 
     Returns:
         (base_url, api_key)
     """
     project_url = os.getenv("SUPABASE_URL")
-    api_key = os.getenv("SUPABASE_ANON_KEY")
+    api_key = os.getenv("SUPABASE_SECRET_KEY")
 
     if not project_url or not api_key:
         candidate = Path(__file__).resolve().parent
-        
+
         if not candidate.exists():
             candidate = Path(__file__).resolve().parents[1] / ".env"
 
@@ -48,14 +48,14 @@ def load_supabase_config():
             logger.info(f"Loading .env from {candidate}")
             data = _load_dotenv_file(candidate)
             project_url = project_url or data.get("SUPABASE_URL")
-            api_key = api_key or data.get("SUPABASE_ANON_KEY")
+            api_key = api_key or data.get("SUPABASE_SECRET_KEY")
 
     if not project_url:
         logger.warning("SUPABASE_URL not found in environment or .env; falling back to http://localhost:54321")
         project_url = "http://localhost:54321"
 
     if not api_key:
-        logger.warning("SUPABASE_ANON_KEY not found in environment or .env; falling back to placeholder key")
+        logger.warning("SUPABASE_SECRET_KEY not found in environment or .env; falling back to placeholder key")
         api_key = "my-api-key"
 
     base_url = f"{project_url.rstrip('/')}/functions/v1"
